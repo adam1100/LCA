@@ -44,4 +44,18 @@ public class Test {
 
 
 	// new branch here
+
+	@org.junit.Test
+	public void testDAG() {
+		LCA tree = new LCA(); 
+	    tree.root = new Node(1); 
+	    tree.root.left = new Node(2); 
+	    tree.root.right = new Node(3); 
+	    tree.root.left.left = new Node(4); 
+
+		assertEquals("LCA(1, 2, 3): ", 1, tree.findLCA(2, 3, 4));
+		// it does not work for 3 nodes
+	}
+	
+
 }
