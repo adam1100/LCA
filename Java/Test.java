@@ -48,16 +48,16 @@ public class Test {
 
 	@org.junit.Test
 	public void testDAG() {
-		Node a, b, c, d;
+		Node a, b, c, d, e;
 		LCA tree = new LCA(); 
 		a = (tree.root = new Node(1));
-		b = (tree.root.left = new Node(2));
-		c = (tree.root.right = new Node(3)); 
-		d = (tree.root.left.right = new Node(4)); 
-		 
-		tree.root.right.left = d; 
-
-		assertTrue(tree.findLCA(2,d.data)==tree.findLCA(3, d.data));
+		b = (a.left = new Node(2));
+		c = (a.right = new Node(3)); 
+		d = (b.right = new Node(4)); 
+		e = (c.left = d);
+		
+		assertTrue(tree.findLCA(b.data, d.data) == b.data); //true
+		assertTrue(tree.findLCA(c.data, e.data) == c.data); //false
 		
 		// it does not work for DAG
 	}
