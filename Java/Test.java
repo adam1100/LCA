@@ -1,3 +1,4 @@
+
 import static org.junit.Assert.*;
 
 public class Test {
@@ -47,14 +48,18 @@ public class Test {
 
 	@org.junit.Test
 	public void testDAG() {
+		Node a, b, c, d;
 		LCA tree = new LCA(); 
-	    tree.root = new Node(1); 
-	    tree.root.left = new Node(2); 
-	    tree.root.right = new Node(3); 
-	    tree.root.left.left = new Node(4); 
+		a = (tree.root = new Node(1));
+		b = (tree.root.left = new Node(2));
+		c = (tree.root.right = new Node(3)); 
+		d = (tree.root.left.right = new Node(4)); 
+		 
+		tree.root.right.left = d; 
 
-		assertEquals("LCA(1, 2, 3): ", 1, tree.findLCA(2, 3, 4));
-		// it does not work for 3 nodes
+		assertTrue(tree.findLCA(2,d.data)==tree.findLCA(3, d.data));
+		
+		// it does not work for DAG
 	}
 	
 
