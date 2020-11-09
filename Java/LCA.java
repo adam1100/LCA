@@ -1,17 +1,147 @@
-import java.util.ArrayList; 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
-
 
 class Node { 
     int data; 
-    Node left, right; 
+    Node left, right;
   
     Node(int value) { 
         data = value; 
         left = right = null; 
     } 
-} 
+}
 
+class DAG { //inspired by Sedgewick & Wayne Digraph.java
+    public final int V;
+    public int E;        
+    public boolean[] marked;   
+    public ArrayList<Integer>[] adj; 
+    public int[] indegree;
+    public int[] outdegree;
+    public boolean hasCycle;
+    public boolean stack[];
+
+    public DAG(int V) {
+        if (V < 0) throw new IllegalArgumentException("vertices must be > 0");
+        this.V = V;
+        this.E = 0;
+        indegree = new int[V];
+        outdegree = new int[V];
+	    marked = new boolean[V];
+	    stack = new boolean[V];
+		adj = (ArrayList<Integer>[]) new ArrayList[V];
+
+		for (int v = 0; v < V; v++) {
+			adj[v] = new ArrayList<Integer>();
+		}
+    }
+
+    private void validateVertex(int v) {
+        if (v < 0 || v >= V)
+            throw new IllegalArgumentException("vertex " + v + " is not between 0 and " + (V-1));
+    }
+    
+    public Iterable<Integer> adj(int v) {
+		return adj[v];
+	}
+
+    public void addEdge(int v, int w){
+        validateVertex(v);
+        validateVertex(w);
+        adj[v].add(w);
+        indegree[w]++;
+        outdegree[v]++;
+        E++;
+    }
+    
+
+	public void findCycle(int v) {
+		marked[v] = true;
+		stack[v] = true;
+
+		for (int w : adj(v)) {
+			if (!marked[w]) {
+				findCycle(w);
+			} else if (stack[w]) {
+				hasCycle = true;
+				return;
+			}
+		}
+		stack[v] = false;
+	}
+
+	public int findLCA(int v, int w) {
+		findCycle(0);
+		validateVertex(v);
+		validateVertex(w);
+		if (hasCycle) {
+			return -1;
+		}
+		else if (E == 0) {
+			return -1;
+		}
+
+		DAG reverse = reverse();
+
+		ArrayList<Integer> array1 = reverse.BFS(v);
+		ArrayList<Integer> array2 = reverse.BFS(w);
+		ArrayList<Integer> commonAncestors = new ArrayList<Integer>();
+
+		boolean found = false;
+
+		for (int i = 0; i < array1.size(); i++) {
+			for (int j = 0; j < array2.size(); j++) {
+				if (array1.get(i) == array2.get(j)) {
+					commonAncestors.add(array1.get(i));
+					found = true;
+				}
+			}
+		}
+
+		if (found) {
+			return commonAncestors.get(0);
+		} else {
+			return -1;
+		}
+	}
+
+	public ArrayList<Integer> BFS(int s) {
+		ArrayList<Integer> order = new ArrayList<Integer>();
+		boolean visited[] = new boolean[V]; 
+		LinkedList<Integer> queue = new LinkedList<Integer>();
+
+		visited[s] = true;
+		queue.add(s);
+
+		while (queue.size() != 0) {
+			s = queue.poll(); 
+			order.add(s);
+
+			Iterator<Integer> i = adj[s].listIterator();
+
+			while (i.hasNext()) {
+				int n = i.next();
+				if (!visited[n]) {
+					visited[n] = true;
+					queue.add(n);
+				}
+			}
+		}
+		return order;
+	}
+
+	public DAG reverse() {
+		DAG reverse = new DAG(V);
+		for (int v = 0; v < V; v++) {
+			for (int w : adj(v)) {
+				reverse.addEdge(w, v);
+			}
+		}
+		return reverse;
+	}
+}
 
 public class LCA {
     Node root; 
@@ -27,8 +157,6 @@ public class LCA {
     private int findLCAInternal(Node root, int n1, int n2) { 
   
         if (!findPath(root, n1, path1) || !findPath(root, n2, path2)) { 
-            System.out.println((path1.size() > 0) ? "n1 is present" : "n1 is missing"); 
-            System.out.println((path2.size() > 0) ? "n2 is present" : "n2 is missing"); 
             return -1; 
         } 
   
