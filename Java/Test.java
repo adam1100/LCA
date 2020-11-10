@@ -64,6 +64,31 @@ public class Test {
 	}
 	
 	@org.junit.Test
+	public void testConstructor(){
+        DAG dag = new DAG(10);
+        dag.addEdge(1, 2);
+        dag.addEdge(2, 3);
+        dag.addEdge(2, 4);
+        dag.addEdge(4, 6);
+        dag.addEdge(3, 5);
+        dag.addEdge(5, 7);
+        dag.addEdge(5, 8);
+
+        assertEquals(10, dag.V);
+        assertEquals(7, dag.E);
+
+        assertEquals(0,dag.indegree[1]);
+        assertEquals(1,dag.indegree[5]);
+
+        assertEquals(0,dag.outdegree[8]);
+        assertEquals(2,dag.outdegree[2]);
+
+        assertEquals("[2]",dag.adj(1).toString());
+        assertEquals("[7, 8]",dag.adj(5).toString());
+
+    }
+	
+	@org.junit.Test
 	public void testAddEdge() {
 		DAG dag = new DAG(3);
 		assertEquals(0, dag.E);
